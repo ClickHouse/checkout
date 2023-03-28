@@ -23,6 +23,10 @@ inputs:
     description: The value is passed as is to the upstream checkout action
     required: true
     default: ${{ github.token }}
+  ignore-docs-submodule:
+    description: Do not checkout clickhouse-docs submodule
+    required: true
+    default: true
 runs:
   using: "composite"
   steps:
@@ -31,6 +35,11 @@ runs:
       shell: bash
       run: |
         sudo rm -fr "$GITHUB_WORKSPACE" && mkdir "$GITHUB_WORKSPACE"
+    - name: Configure git
+      if: ${{ fromJSON(inputs.ignore-docs-submodule) }}
+      shell: bash
+      run: |
+        git config submodule."docs/extras/clickhouse-docs".update none
     - name: Check out repository code
       uses: actions/checkout@v3
       with:
