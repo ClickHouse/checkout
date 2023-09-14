@@ -23,6 +23,9 @@ inputs:
     description: The value is passed as is to the upstream checkout action
     required: true
     default: ${{ github.token }}
+  filter:
+    description: The value is passed as is to the upstream checkout action
+    required: false
 runs:
   using: "composite"
   steps:
@@ -32,11 +35,13 @@ runs:
       run: |
         sudo rm -fr "$GITHUB_WORKSPACE" && mkdir "$GITHUB_WORKSPACE"
     - name: Check out repository code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: ${{ inputs.fetch-depth }}
         ref: ${{ inputs.ref }}
         token: ${{ inputs.token }}
+        path: ${{ inputs.path }}
+        filter: ${{ inputs.filter }}
     - name: Checkout submodules
       if: ${{ fromJSON(inputs.submodules) }}
       shell: bash
