@@ -49,6 +49,7 @@ runs:
       if: ${{ fromJSON(inputs.submodules) }}
       shell: bash
       run: |
+        echo '::group::Check out submodules'
         git -C "$GITHUB_WORKSPACE" submodule sync
         git -C "$GITHUB_WORKSPACE" submodule init
         git config --file "$GITHUB_WORKSPACE/.gitmodules" --null --get-regexp path | \
@@ -66,3 +67,4 @@ runs:
             fi
         done
         rm -f "$RUNNER_TEMP"/submodules-to-checkout
+        echo '::endgroup::'
