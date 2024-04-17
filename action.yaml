@@ -50,12 +50,15 @@ runs:
       shell: bash
       run: |
         echo '::group::Check out submodules'
+        nproc=$(nproc --all)
+        [ "$nproc" -lt 15 ] && nproc=15
+        echo "Will checkout submodules in $nproc parallel processes"
         git -C "$GITHUB_WORKSPACE" submodule sync
         git -C "$GITHUB_WORKSPACE" submodule init
         git config --file "$GITHUB_WORKSPACE/.gitmodules" --null --get-regexp path | \
           sed -z 's|.*\n||' > "$RUNNER_TEMP"/submodules-to-checkout
         RETRY=1
-        while ! xargs --max-procs=$(nproc --all) --null --no-run-if-empty \
+        while ! xargs --max-procs="$nproc" --null --no-run-if-empty \
           --max-args=1 git -C "$GITHUB_WORKSPACE" submodule update \
           --depth="${{ inputs.submodules-depth }}" --single-branch \
           < "$RUNNER_TEMP"/submodules-to-checkout
