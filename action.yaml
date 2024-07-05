@@ -29,6 +29,9 @@ inputs:
   submodule-retries:
     description: The number of attempts to checkout submodules on errors
     default: 3
+  timeout-minutes:
+    description: timeout
+    default: 15
 runs:
   using: "composite"
   steps:
@@ -47,6 +50,7 @@ runs:
         filter: ${{ inputs.filter }}
     - name: Checkout submodules
       if: ${{ fromJSON(inputs.submodules) }}
+      timeout-minutes: ${{ inputs.timeout-minutes }}
       shell: bash
       run: |
         echo '::group::Check out submodules'
